@@ -1,4 +1,5 @@
 let switches = [];
+let settingsVisible = true;
 
 function addSwitch() {
   const name = prompt("Name of the switch button:");
@@ -42,9 +43,6 @@ function renderSwitches() {
     const div = document.createElement("div");
     div.className = "switch-container";
 
-    const label = document.createElement("label");
-    label.textContent = switchObj.name;
-
     const switchWrapper = document.createElement("label");
     switchWrapper.className = "switch";
 
@@ -59,72 +57,75 @@ function renderSwitches() {
     switchWrapper.appendChild(input);
     switchWrapper.appendChild(slider);
 
+    const label = document.createElement("label");
+    label.textContent = switchObj.name;
+
     const rulesDiv = document.createElement("div");
     rulesDiv.className = "rules";
     switches.forEach((target, targetIndex) => {
       if (targetIndex !== index) {
         const ruleOn = switchObj.rules[targetIndex]
-          ? switchObj.rules[targetIndex]["on"]
-          : "none";
+            ? switchObj.rules[targetIndex]["on"]
+            : "none";
         const ruleOff = switchObj.rules[targetIndex]
-          ? switchObj.rules[targetIndex]["off"]
-          : "none";
-        rulesDiv.innerHTML += `${target.name} ha ON:
+            ? switchObj.rules[targetIndex]["off"]
+            : "none";
+        rulesDiv.innerHTML += `set ${target.name} if this is ON to:
                             <select onchange="setRule(${index}, ${targetIndex}, 'on', this.value)">
                                 <option value="none" ${
-                                  ruleOn === "none" ? "selected" : ""
-                                }>Semmi</option>
+            ruleOn === "none" ? "selected" : ""
+        }>Nothing</option>
                                 <option value="on" ${
-                                  ruleOn === "on" ? "selected" : ""
-                                }>Bekapcsol</option>
+            ruleOn === "on" ? "selected" : ""
+        }>On</option>
                                 <option value="off" ${
-                                  ruleOn === "off" ? "selected" : ""
-                                }>Kikapcsol</option>
+            ruleOn === "off" ? "selected" : ""
+        }>Off</option>
                             </select>
-                            ha OFF:
+                            if this is OFF to:
                             <select onchange="setRule(${index}, ${targetIndex}, 'off', this.value)">
                                 <option value="none" ${
-                                  ruleOff === "none" ? "selected" : ""
-                                }>Semmi</option>
+            ruleOff === "none" ? "selected" : ""
+        }>Nothing</option>
                                 <option value="on" ${
-                                  ruleOff === "on" ? "selected" : ""
-                                }>Bekapcsol</option>
+            ruleOff === "on" ? "selected" : ""
+        }>On</option>
                                 <option value="off" ${
-                                  ruleOff === "off" ? "selected" : ""
-                                }>Kikapcsol</option>
+            ruleOff === "off" ? "selected" : ""
+        }>Off</option>
                             </select><br>`;
       }
     });
 
-    div.appendChild(label);
     div.appendChild(switchWrapper);
+    div.appendChild(label);
     div.appendChild(rulesDiv);
-    rulesDiv.style.display = "block";
+    if (settingsVisible) {
+      rulesDiv.style.display = "block";
+    } else {
+      rulesDiv.style.display = "none";
+    }
     switchList.appendChild(div);
   });
 }
 
 function toggleSettings() {
+  settingsVisible = !settingsVisible;
+  const displayStyle = settingsVisible ? "block" : "none";
+
   const rulesDivs = document.querySelectorAll(".rules");
   rulesDivs.forEach((rulesDiv) => {
-    if (rulesDiv.style.display === "none" || rulesDiv.style.display === "") {
-      rulesDiv.style.display = "block";
-    } else {
-      rulesDiv.style.display = "none";
-    }
+    rulesDiv.style.display = displayStyle;
   });
+
   const elements = ["webapptitle", "gameTitle", "newswitchbtn"];
-  for (i in elements) {
-    title = document.getElementById(elements[i]);
-    if (title.style.display === "none" || title.style.display === "") {
-      title.style.display = "block";
-    } else {
-      title.style.display = "none";
-    }
-  }
+  elements.forEach((elementId) => {
+    const element = document.getElementById(elementId);
+    element.style.display = displayStyle;
+  });
 }
 
 document.getElementById("gameTitle").addEventListener("input", function () {
   const title = document.getElementById("gameTitle").value;
-  document.getElementById("dynamicTitle").textContent = title || "Játék címe";
+  document.getElementById("dynamicTitle").textContent = title || "Game";
 });
